@@ -1,6 +1,7 @@
-opencv_python==4.5.2.52
-scipy==1.6.2
-sentence_transformers==2.0.0
-pandas==1.2.3
 numpy==1.19.5
+sentence_transformers==2.0.0
+opencv_python==4.5.2.52
+pandas==1.2.3
+scipy==1.6.2
 keras==2.4.3
+spellchecker==0.4
