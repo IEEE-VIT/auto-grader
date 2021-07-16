@@ -94,8 +94,3 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
     # Enable this line to see all contours.
     # cv2.drawContours(img, contours, -1, (0, 0, 255), 3)
     # cv2.imwrite("./Temp/img_contour.jpg", img)
-
-
-
-#Input image path and out folder
-box_extraction("./samples/form.jpg", "./samples/output/")
