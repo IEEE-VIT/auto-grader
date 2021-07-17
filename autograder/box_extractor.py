@@ -32,11 +32,11 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
 
     print("Reading image..")
     image = cv2.imread(img_for_box_extraction_path, 0)  # Read the image
-    img = cv2.resize(image, (620, 860))
+    img = cv2.resize(image, (750, 1000))
+    # img = cv2.flip(img, 1)
     (thresh, img_bin) = cv2.threshold(
-        img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU
+        img, 228, 255, cv2.THRESH_BINARY_INV
     )  # Thresholding the image
-    img_bin = 255 - img_bin  # Invert the image
 
     print("Storing binary image to ./samples/processed/Image_bin.jpg..")
     cv2.imwrite("./samples/processed/Image_bin.jpg", img_bin)
@@ -90,15 +90,22 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
     print("Output stored in Output directiory!")
 
     idx = 0
+    results = np.array([])
     for c in contours:
         # Returns the location and width,height for every contour
         x, y, w, h = cv2.boundingRect(c)
 
         # If the box height is greater then 20, widht is >80, then only save it as a box in "cropped/" folder.
-        if w > 10 and h > 10 and w < 24 and h < 24:
+        if w > 10 and h > 10 and w < 26 and h < 26:
             idx += 1
             new_img = img[y : y + h, x : x + w]
+            new_img = cv2.resize(new_img, (28, 28))
+            # new_img = 255 - new_img
+            (new_thresh, new_img) = cv2.threshold(new_img, 200, 255, cv2.THRESH_BINARY_INV)
+            results = np.append(results, new_img)
+            # new_idx = (19*(int((idx-1)/19)+1))-idx+1+(19*(int((idx-1)/19)))
             cv2.imwrite(cropped_dir_path + str(idx) + ".png", new_img)
+    return results.reshape(-1,28,28,1)
 
     # For Debugging
     # Enable this line to see all contours.

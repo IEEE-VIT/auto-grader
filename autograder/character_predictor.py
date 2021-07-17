@@ -1,11 +1,11 @@
 import pandas as pd
 from keras.models import load_model
 
-model = load_model("model")
+model = load_model("model_new")
+print(model.summary())
 
-
-def predict(img):
-    pred = model.predict(img)
+def predict(img_arr):
+    pred = model.predict_classes(img_arr)
     classDict = {
         0: "0",
         1: "1",
@@ -44,5 +44,5 @@ def predict(img):
         34: "Y",
         35: "Z",
     }
-    outputDf = pd.DataFrame(pred)
-    return classDict(list(outputDf.idxmax(axis=1))[0])
+    class_pred = [classDict[x] for x in pred]
+    return class_pred
