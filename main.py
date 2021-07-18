@@ -5,6 +5,17 @@ from autograder.character_predictor import predict
 
 characters = box_extraction("./samples/form_scanned_4.jpg", "./samples/output/")
 
+pix=0;
+for i in range(len(characters)):
+    for j in range(len(characters[i])):
+        if(j!=0):
+            pix=pix+1
+    if(pix<20):
+        characters.drop(i)
+        
+        
+        
+
 x = predict(characters)
 
 for i in range(len(x)):
