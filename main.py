@@ -4,13 +4,18 @@ from autograder.character_predictor import predict
 # from autograder.spelling_corrector import fix_spellings
 # from autograder.text_similarity import check_similarity, get_marks
 
-characters, coordinates = box_extraction("./samples/form_scanned_4.jpg", "./samples/output/")
+characters, coordinates = box_extraction(
+    "./samples/form_scanned_4.jpg", "./samples/output/"
+)
+
+
 def csort(e):
-    return 1000*e[0]+e[1]
+    return 1000 * e[0] + e[1]
 
 
 coordinates.sort(key=csort)
 print(coordinates)
+
 pix = 0
 for i in range(len(characters)):
     for j in range(len(characters[i])):
@@ -30,4 +35,3 @@ for i in range(len(x)):
 # cos_scores = check_similarity(["sky is blue"], query)
 
 # print(get_marks(cos_scores, 5, (0.45, 0.85)))
-
