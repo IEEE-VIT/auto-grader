@@ -105,7 +105,7 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
                 new_img, 200, 255, cv2.THRESH_BINARY_INV
             )
             results = np.append(results, new_img)
-            points.append((x, y))
+            points.append([x, y, idx])
             cv2.imwrite(cropped_dir_path + str(idx) + ".png", new_img)
     return results.reshape(-1, 28, 28, 1), points
 
