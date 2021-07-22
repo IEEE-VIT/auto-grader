@@ -4,7 +4,7 @@ import numpy as np
 
 def sort_contours(cnts, method="left-to-right"):
     # initialize the reverse flag and sort index
-    reverse = False
+    reverse = True
     i = 0
 
     # handle if we need to sort in reverse
@@ -85,7 +85,7 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
         img_final_bin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
     )
     # Sort all the contours by top to bottom.
-    (contours, boundingBoxes) = sort_contours(contours, method="left-to-right")
+    (contours, boundingBoxes) = sort_contours(contours, method="top-to-bottom")
 
     # max_height = np.max(contours[::, 3])
     # nearest = max_height * 1.4
@@ -93,7 +93,7 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
     # contours.sort(key=lambda r: [int(nearest * round(float(r[1]) / nearest)), r[0]])
 
     # for x, y, w, h in contours:
-    #     print(f"{x:4} {y:4} {w:4} {h:4}") 
+    #     print(f"{x:4} {y:4} {w:4} {h:4}")
 
     print("Output stored in Output directiory!")
 
@@ -112,10 +112,10 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
             (new_thresh, new_img) = cv2.threshold(
                 new_img, 200, 255, cv2.THRESH_BINARY_INV
             )
-            results = np.append(results, new_img)
+            results = np.append(results, np.array(new_img))
             points.append([x, y, idx])
             cv2.imwrite(cropped_dir_path + str(idx) + ".png", new_img)
-    return results.reshape(-1, 28, 28, 1), points
+    return results.reshape(-1, 28 * 28), points
 
     # For Debugging
     # Enable this line to see all contours.
