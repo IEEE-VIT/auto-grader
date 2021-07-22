@@ -85,7 +85,15 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
         img_final_bin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
     )
     # Sort all the contours by top to bottom.
-    (contours, boundingBoxes) = sort_contours(contours, method="top-to-bottom")
+    (contours, boundingBoxes) = sort_contours(contours, method="left-to-right")
+
+    # max_height = np.max(contours[::, 3])
+    # nearest = max_height * 1.4
+
+    # contours.sort(key=lambda r: [int(nearest * round(float(r[1]) / nearest)), r[0]])
+
+    # for x, y, w, h in contours:
+    #     print(f"{x:4} {y:4} {w:4} {h:4}") 
 
     print("Output stored in Output directiory!")
 
@@ -111,5 +119,5 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
 
     # For Debugging
     # Enable this line to see all contours.
-    # cv2.drawContours(img, contours, -1, (0, 0, 255), 3)
-    # cv2.imwrite("./Temp/img_contour.jpg", img)
+    cv2.drawContours(img, contours, -1, (0, 0, 255), 3)
+    cv2.imwrite("./Temp/img_contour.jpg", img)
