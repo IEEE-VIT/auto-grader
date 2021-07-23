@@ -1,3 +1,4 @@
+import numpy as np
 from autograder.box_extractor import box_extraction
 from autograder.character_predictor import predict
 
@@ -17,15 +18,15 @@ if len(charactersAll) == 380:
     # def csort(e):
     #     return 1000 * e[0] + e[1]
 
-    # coordinates.sort(key=csort)
+    # charactersAll = np.array([x for _, x in sorted(zip(coordinates, charactersAll))])
     # for c in coordinates:
     #     print(c)
 
     locations = []
     prev = 0
-    sentence = ""
     print(charactersAll.shape)
     for n in range(10):
+        sentence = ""
         characters = charactersAll[38 * n : 38 * (n + 1)]
         for i in range(len(characters)):  # boxes
             pix = 0
@@ -44,7 +45,7 @@ if len(charactersAll) == 380:
                         print(subarray.shape)
                 prev = i + 1
 
-        print(sentence)
+        print(n+1, sentence[::-1])
 
         # query = fix_spellings(sentence)
 
