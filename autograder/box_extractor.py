@@ -100,16 +100,14 @@ def box_extraction(img_for_box_extraction_path, cropped_dir_path):
             idx += 1
             new_img = img[y : y + h, x : x + w]
             new_img = cv2.resize(new_img, (28, 28))
-            (new_thresh, new_img) = cv2.threshold(
-                new_img, 200, 255, cv2.THRESH_BINARY_INV
-            )
+            (_, new_img) = cv2.threshold(new_img, 200, 255, cv2.THRESH_BINARY_INV)
             results = np.append(results, np.array(new_img))
-            new_idx = (19*(int((idx-1)/19)+1))-idx+1+(19*(int((idx-1)/19)))
+            new_idx = (
+                (19 * (int((idx - 1) / 19) + 1))
+                - idx
+                + 1
+                + (19 * (int((idx - 1) / 19)))
+            )
             points.append(new_idx)
             cv2.imwrite(cropped_dir_path + str(new_idx) + ".png", new_img)
     return results.reshape(-1, 28 * 28), points
-
-    # For Debugging
-    # Enable this line to see all contours.
-    # cv2.drawContours(img, contours, -1, (0, 0, 255), 3)
-    # cv2.imwrite("./Temp/img_contour.jpg", img)

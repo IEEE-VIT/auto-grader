@@ -11,8 +11,6 @@ def check_similarity(sentences, query):
 
     number_top_matches = len(sentences)
 
-    print("Semantic Search Results")
-
     for query, query_embedding in zip(queries, query_embeddings):
         distances = scipy.spatial.distance.cdist(
             [query_embedding], sentences_embeddings, "cosine"
@@ -21,14 +19,9 @@ def check_similarity(sentences, query):
         results = zip(range(len(distances)), distances)
         results = sorted(results, key=lambda x: x[1])
 
-        print("\n\n======================\n\n")
-        print("Query:", query)
-        print(f"\nSimilar {number_top_matches} sentence(s) in corpus:")
-
         cos_scores = []
 
         for idx, distance in results[0:number_top_matches]:
-            print(sentences[idx].strip(), "(Cosine Score: %.4f)" % (1 - distance))
             cos_scores.append(1 - distance)
         return cos_scores
 
@@ -43,5 +36,4 @@ def get_marks(cos_scores, max_marks, bias):
             0,
         ]
     )
-    print("Marks: ", "%.2f" % marks_obtained, "/", "%.2f" % max_marks)
     return marks_obtained

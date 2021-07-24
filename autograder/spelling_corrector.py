@@ -3,7 +3,9 @@ from spellchecker import SpellChecker
 spell = SpellChecker()
 
 
-def fix_spellings(sentence):
+def fix_spellings(sentence, new_words):
+    spell.word_frequency.load_words(new_words)
+    spell.known(new_words)
     words = sentence.split(" ")
     fixed_sentence = ""
 
