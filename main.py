@@ -1,57 +1,71 @@
-import numpy as np
 from autograder.box_extractor import box_extraction
 from autograder.character_predictor import predict
+from autograder.spelling_corrector import fix_spellings
+from autograder.text_similarity import check_similarity, get_marks
 
-# from autograder.spelling_corrector import fix_spellings
-# from autograder.text_similarity import check_similarity, get_marks
 
-charactersAll, coordinates = box_extraction(
-    "./samples/form_scanned_2.jpg", "./samples/output/"
-)
+def auto_grade(defined_answers, image_location, output_location):
+    characters_all, coordinates = box_extraction(image_location, output_location)
+    if len(characters_all) == 380:
 
-# print(coordinates)
+        # def csort(e):
+        #     return 1000 * e[0] + e[1]
 
-print(len(charactersAll))
+        # charactersAll = np.array([x for _, x in sorted(zip(coordinates, charactersAll))])
+        # for c in coordinates:
+        #     print(c)
 
-if len(charactersAll) == 380:
+        locations = []
+        prev = 0
+        print(characters_all.shape)
+        for n in range(10):
+            sentence = ""
+            characters = characters_all[38 * n : 38 * (n + 1)]
+            for i in range(len(characters)):  # boxes
+                pix = 0
+                for j in range(len(characters[i])):  # pixels
+                    debug = characters[i][j]
+                    if characters[i][j] != 0:
+                        pix = pix + 1
+                if pix < 30:
+                    subarray = characters[prev:i].reshape(-1, 28, 28, 1)
+                    if subarray.shape[0] > 1:
+                        try:
+                            pred = predict(subarray)
+                            sentence += "".join(pred) + " "
+                        except:
+                            print(subarray.shape)
+                    prev = i + 1
 
-    # def csort(e):
-    #     return 1000 * e[0] + e[1]
+            print(n + 1, sentence[::-1])
 
-    # charactersAll = np.array([x for _, x in sorted(zip(coordinates, charactersAll))])
-    # for c in coordinates:
-    #     print(c)
+            new_words = []
+            for answer in defined_answers[n]:
+                words = answer.split()
+                for word in words:
+                    new_words.append(word)
 
-    locations = []
-    prev = 0
-    print(charactersAll.shape)
-    for n in range(10):
-        sentence = ""
-        characters = charactersAll[38 * n : 38 * (n + 1)]
-        for i in range(len(characters)):  # boxes
-            pix = 0
-            for j in range(len(characters[i])):  # pixels
-                debug = characters[i][j]
-                if characters[i][j] != 0:
-                    pix = pix + 1
-            if pix < 30:
-                subarray = characters[prev:i].reshape(-1, 28, 28, 1)
-                if subarray.shape[0] > 1:
-                    # print(subarray.shapes)
-                    try:
-                        pred = predict(subarray)
-                        sentence += "".join(pred) + " "
-                    except:
-                        print(subarray.shape)
-                prev = i + 1
+            query = fix_spellings(sentence[::-1], new_words)
 
-        print(n+1, sentence[::-1])
+            if query != "":
+                print(query)
+                cos_scores = check_similarity(defined_answers[n], query)
+                print("Marks: ", "%.2f" % get_marks(cos_scores, 5, (0.45, 0.85)))
+            else:
+                print("Marks: ", "0.00")
 
-        # query = fix_spellings(sentence)
 
-        # cos_scores = check_similarity(["sky is blue"], query)
+defined_answers = [
+    ["Yajat Malhotra", "Yajat"],
+    ["Anshul Agrawala", "Anshul"],
+    ["Avyay Casheekar", "Avyay"],
+    ["Hello world", "Hi world"],
+    ["Hello world"],
+    ["Hello world"],
+    ["Hello world"],
+    ["Hello world"],
+    ["Hello world"],
+    ["Hello world"],
+]
 
-        # print(get_marks(cos_scores, 5, (0.45, 0.85)))
-
-        # [Y],[A],[J],[ ],[ ],[ ],[ ],[ ],[ ],[A],[T]
-        # YAJ AT
+auto_grade(defined_answers, "./samples/form_scanned_2.jpg", "./samples/output/")

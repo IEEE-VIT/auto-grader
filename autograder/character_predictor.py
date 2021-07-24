@@ -2,7 +2,7 @@ import pandas as pd
 from keras.models import load_model
 
 model = load_model("model")
-print(model.summary())
+
 
 def predict(img_arr):
     pred = model.predict_classes(img_arr)
