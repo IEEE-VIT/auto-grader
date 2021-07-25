@@ -1,8 +1,7 @@
 from autograder.box_extractor import box_extraction
 from autograder.character_predictor import predict
-
-# from autograder.spelling_corrector import fix_spellings
-# from autograder.text_similarity import check_similarity, get_marks
+from autograder.spelling_corrector import fix_spellings
+from autograder.text_similarity import check_similarity, get_marks
 
 
 def auto_grade(defined_answers, image_location, output_location):
@@ -11,9 +10,7 @@ def auto_grade(defined_answers, image_location, output_location):
 
         locations = []
         prev = 0
-        print(
-            answers.shape
-        )  # 16 cells x 2 rows x 10 answers = 360 boxes x (28 x 28) pixels
+        print(answers.shape)  # 16 cells x 2 rows x 10 answers = 360 boxes x (28 x 28) pixels
         for n in range(10):  # all questions
             sentence = ""
             answer = answers[38 * n : 38 * (n + 1)]  # individual answer(2 rows)
@@ -40,20 +37,20 @@ def auto_grade(defined_answers, image_location, output_location):
 
             print(n + 1, sentence[::-1])
 
-            # new_words = []
-            # for answer in defined_answers[n]:
-            #     words = answer.split()
-            #     for word in words:
-            #         new_words.append(word)
+            new_words = []
+            for answer in defined_answers[n]:
+                words = answer.split()
+                for word in words:
+                    new_words.append(word.lower())
 
-            # query = fix_spellings(sentence[::-1], new_words)
+            query = fix_spellings(sentence[::-1].lower(), new_words)
 
-            # if query != "":
-            #     print(query)
-            #     cos_scores = check_similarity(defined_answers[n], query)
-            #     print("Marks: ", "%.2f" % get_marks(cos_scores, 5, (0.45, 0.85)))
-            # else:
-            #     print("Marks: ", "0.00")
+            if query != "":
+                print(query)
+                cos_scores = check_similarity(defined_answers[n], query)
+                print("Marks: ", "%.2f" % get_marks(cos_scores, 5, (0.45, 0.85)))
+            else:
+                print("Marks: ", "0.00")
 
 
 defined_answers = [
