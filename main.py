@@ -1,7 +1,19 @@
+from typing import List
 from autograder.box_extractor import box_extraction
 from autograder.character_predictor import predict
 from autograder.spelling_corrector import fix_spellings
 from autograder.text_similarity import check_similarity, get_marks
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from pydantic import BaseModel
+import numpy as np
+import cv2
+
+app = FastAPI(
+    title="Auto-Grader",
+    version="1.0",
+    description="Automatically grades answer sheets",
+)
 
 
 def auto_grade(defined_answers, image_location, output_location):
@@ -10,7 +22,9 @@ def auto_grade(defined_answers, image_location, output_location):
 
         locations = []
         prev = 0
-        print(answers.shape)  # 16 cells x 2 rows x 10 answers = 360 boxes x (28 x 28) pixels
+        print(
+            answers.shape
+        )  # 16 cells x 2 rows x 10 answers = 360 boxes x (28 x 28) pixels
         for n in range(10):  # all questions
             sentence = ""
             answer = answers[38 * n : 38 * (n + 1)]  # individual answer(2 rows)
@@ -45,25 +59,50 @@ def auto_grade(defined_answers, image_location, output_location):
 
             query = fix_spellings(sentence[::-1].lower(), new_words)
 
+            marks = []
+
             if query != "":
                 print(query)
                 cos_scores = check_similarity(defined_answers[n], query)
-                print("Marks: ", "%.2f" % get_marks(cos_scores, 5, (0.45, 0.85)))
+                m = get_marks(cos_scores, 5, (0.45, 0.85))
+                print("Marks: ", "%.2f" % m)
+                marks.append(m)
             else:
                 print("Marks: ", "0.00")
+                marks.append(0.0)
+            return marks
 
 
-defined_answers = [
-    ["Yajat Malhotra", "Yajat"],
-    ["Anshul Agrawala", "Anshul"],
-    ["Avyay Casheekar", "Avyay"],
-    ["Hello world", "Hi world"],
-    ["Hello world"],
-    ["Hello world"],
-    ["Hello world"],
-    ["Hello world"],
-    ["Hello world"],
-    ["Hello world"],
-]
+@app.get("/")
+async def index():
+    return {"message": "Auto-Grader is online"}
 
-auto_grade(defined_answers, "./samples/form_scanned_2.jpg", "./samples/output/")
+class Answers(BaseModel):
+    answers: List[str]
+
+class Grade(BaseModel):
+    ans_1: Answers
+    ans_2: Answers
+    ans_3: Answers
+    ans_4: Answers
+    ans_5: Answers
+    ans_6: Answers
+    ans_7: Answers
+    ans_8: Answers
+    ans_9: Answers
+    ans_10: Answers
+
+
+@app.post("/grade")
+async def index(grade: Grade, file: UploadFile = File(...)):
+    extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png", "JPG", "PNG")
+    if not extension:
+        raise HTTPException(
+            status_code=400, detail="File must be an image, in jpg or png format!"
+        )
+
+    image = await file.read()
+    nparr = np.fromstring(image, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    marks = auto_grade(grade., img)
+    return {"marks": marks}
