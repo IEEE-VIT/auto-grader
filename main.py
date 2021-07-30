@@ -1,11 +1,10 @@
-from typing import List
 from autograder.box_extractor import box_extraction
 from autograder.character_predictor import predict
 from autograder.spelling_corrector import fix_spellings
 from autograder.text_similarity import check_similarity, get_marks
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from pydantic import BaseModel
+from typing import List
 import numpy as np
 import cv2
 
@@ -16,8 +15,8 @@ app = FastAPI(
 )
 
 
-def auto_grade(defined_answers, image_location, output_location):
-    answers, coordinates = box_extraction(image_location, output_location)
+def auto_grade(defined_answers, img):
+    answers, coordinates = box_extraction(img)
     if len(answers) == 380:
 
         locations = []
@@ -77,24 +76,20 @@ def auto_grade(defined_answers, image_location, output_location):
 async def index():
     return {"message": "Auto-Grader is online"}
 
-class Answers(BaseModel):
-    answers: List[str]
-
-class Grade(BaseModel):
-    ans_1: Answers
-    ans_2: Answers
-    ans_3: Answers
-    ans_4: Answers
-    ans_5: Answers
-    ans_6: Answers
-    ans_7: Answers
-    ans_8: Answers
-    ans_9: Answers
-    ans_10: Answers
-
-
-@app.post("/grade")
-async def index(grade: Grade, file: UploadFile = File(...)):
+@app.post("/grade/")
+async def index(
+    ans1: List[str],
+    ans2: List[str],
+    ans3: List[str],
+    ans4: List[str],
+    ans5: List[str],
+    ans6: List[str],
+    ans7: List[str],
+    ans8: List[str],
+    ans9: List[str],
+    ans10: List[str],
+    file: UploadFile = File(...),
+):
     extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png", "JPG", "PNG")
     if not extension:
         raise HTTPException(
@@ -104,5 +99,17 @@ async def index(grade: Grade, file: UploadFile = File(...)):
     image = await file.read()
     nparr = np.fromstring(image, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    marks = auto_grade(grade., img)
+    ans_list = [
+        ans1,
+        ans2,
+        ans3,
+        ans4,
+        ans5,
+        ans6,
+        ans7,
+        ans8,
+        ans9,
+        ans10,
+    ]
+    marks = auto_grade(ans_list, img)
     return {"marks": marks}
