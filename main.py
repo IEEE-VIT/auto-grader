@@ -15,7 +15,7 @@ app = FastAPI(
 )
 
 
-def auto_grade(defined_answers, img):
+def auto_grade(defined_answers, img, max_marks, bias):
     answers, coordinates = box_extraction(img)
     if len(answers) == 380:
 
@@ -24,6 +24,9 @@ def auto_grade(defined_answers, img):
         print(
             answers.shape
         )  # 16 cells x 2 rows x 10 answers = 360 boxes x (28 x 28) pixels
+
+        marks = []
+
         for n in range(10):  # all questions
             sentence = ""
             answer = answers[38 * n : 38 * (n + 1)]  # individual answer(2 rows)
@@ -58,23 +61,22 @@ def auto_grade(defined_answers, img):
 
             query = fix_spellings(sentence[::-1].lower(), new_words)
 
-            marks = []
-
             if query != "":
                 print(query)
                 cos_scores = check_similarity(defined_answers[n], query)
-                m = get_marks(cos_scores, 5, (0.45, 0.85))
+                m = get_marks(cos_scores, max_marks, bias)
                 print("Marks: ", "%.2f" % m)
-                marks.append(m)
+                marks.append(round(m, 4))
             else:
                 print("Marks: ", "0.00")
                 marks.append(0.0)
-            return marks
+        return marks
 
 
 @app.get("/")
 async def index():
     return {"message": "Auto-Grader is online"}
+
 
 @app.post("/grade/")
 async def index(
@@ -88,8 +90,17 @@ async def index(
     ans8: List[str],
     ans9: List[str],
     ans10: List[str],
+    max_marks: float,
+    lower_limit: float,
+    upper_limit: float,
     file: UploadFile = File(...),
 ):
+    if lower_limit > 1.0 or lower_limit < 0.0 or upper_limit > 1.0 or upper_limit < 0.0:
+        raise HTTPException(status_code=400, detail="bias1 or bias2 not in range (0-1)")
+    if lower_limit > upper_limit:
+        raise HTTPException(
+            status_code=400, detail="lower_limit cannot be greater than upper_limit"
+        )
     extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png", "JPG", "PNG")
     if not extension:
         raise HTTPException(
@@ -98,7 +109,7 @@ async def index(
 
     image = await file.read()
     nparr = np.fromstring(image, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    img = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
     ans_list = [
         ans1,
         ans2,
@@ -111,5 +122,5 @@ async def index(
         ans9,
         ans10,
     ]
-    marks = auto_grade(ans_list, img)
+    marks = auto_grade(ans_list, img, max_marks, (lower_limit, upper_limit))
     return {"marks": marks}
