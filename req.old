@@ -1,0 +1,12 @@
+# opencv_python==4.5.2.52
+# scipy==1.6.2
+# sentence_transformers==2.0.0
+# pandas==1.2.3
+# numpy==1.19.5
+# fastapi==0.68.0
+# keras==2.4.3
+# pyspellchecker==0.4
+# python-multipart
+# uvicorn
+# tensorflow
+
