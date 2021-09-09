@@ -1,4 +1,4 @@
-# OCR Box Extractor
+# Auto Grader ML
 
 ### Usage
 
