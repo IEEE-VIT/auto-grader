@@ -17,7 +17,7 @@ Step 2: The boxes in the scanned image are identified and cropped out.
 
 Extracted Character
 
-<img src="https://raw.githubusercontent.com/IEEE-VIT/auto-grader/main/samples/output/1.png" alt="Auto-Grader Cropped Character" width="100"/>
+<img src="https://raw.githubusercontent.com/IEEE-VIT/auto-grader/main/samples/output/334.png" alt="Auto-Grader Cropped Character" width="100"/>
 
 Step 3: Using a CNN, these characters are classified.
 
