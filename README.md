@@ -3,7 +3,7 @@
 <p align="center">Automatically grade answer sheets!</p>
 <p align="center">Consider leaving a :star: if you found the project helpful.</p>
 
-# Auto Grader ML
+# Auto Grader
 Auto Grader helps teachers by automating the paper correction process.
 
 ## Flow
@@ -67,9 +67,9 @@ To get a local copy up and running follow these simple steps.
    ```sh
    pip install -r requirements.txt
    ```
-6. Run it
+6. Start the API
    ```sh
-   python main.py
+   uvicorn main:app --reload
    ```
 
 ## Contributing
