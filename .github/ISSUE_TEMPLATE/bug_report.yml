@@ -15,7 +15,7 @@ body:
     id: reproduce
     attributes:
       label: How to reproduce?
-      description: Describe the steps to reprocude.
+      description: Describe the steps to reproduce.
       placeholder: To reproduce the behavior
     validations:
       required: true
