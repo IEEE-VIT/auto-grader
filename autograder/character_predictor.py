@@ -1,5 +1,5 @@
 import pandas as pd
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 
 model = load_model("model")
 
