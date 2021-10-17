@@ -32,7 +32,7 @@ Step 7: The similarity model gives a cosine score using which is used to determi
 
 ## Built With
 
-* [Python 3.8.9](https://www.python.org/downloads/release/python-389/)
+* [Python 3.8.10](https://www.python.org/downloads/release/python-3810/)
 * [FastAPI](https://fastapi.tiangolo.com/)
 * [TensorFlow 2](https://www.tensorflow.org/)
 * [OpenCV](https://docs.opencv.org/master/index.html)
@@ -42,7 +42,7 @@ Step 7: The similarity model gives a cosine score using which is used to determi
 To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
-- Python 3.8.9 and the latest version of pip.
+- Python 3.8.10 and the latest version of pip.
 
 
 ### Installation
@@ -61,7 +61,7 @@ To get a local copy up and running follow these simple steps.
    python -m venv env
    ```
    ```sh
-   env\Scripts\activate
+   .\env\Scripts\activate
    ```
 5. Install all requirements
    ```sh
