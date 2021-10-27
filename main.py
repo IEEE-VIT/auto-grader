@@ -51,8 +51,9 @@ def get_sentences_from_sheet(img):
                     prev = i + 1
 
             print(n + 1, sentence[::-1])
-            sentences.append(sentence)
+            sentences.append(sentence[::-1])
         return sentences
+
 
 def find_marks(sentences, defined_answers, max_marks, bias):
     n = 0
@@ -64,7 +65,7 @@ def find_marks(sentences, defined_answers, max_marks, bias):
             for word in words:
                 new_words.append(word.lower())
 
-        query = fix_spellings(sentence[::-1].lower(), new_words)
+        query = fix_spellings(sentence.lower(), new_words)
 
         if query != "":
             print(query)
@@ -75,7 +76,7 @@ def find_marks(sentences, defined_answers, max_marks, bias):
         else:
             print("Marks: ", "0.00")
             marks.append(0.0)
-        n+=1
+        n += 1
     return marks
 
 
@@ -132,7 +133,8 @@ async def index(
     marks = find_marks(sentences, ans_list, max_marks, (lower_limit, upper_limit))
     return {"marks": marks}
 
-@app.post('/grade_on_answers/')
+
+@app.post("/grade_text/")
 async def index(
     ans1: List[str],
     ans2: List[str],
@@ -144,19 +146,19 @@ async def index(
     ans8: List[str],
     ans9: List[str],
     ans10: List[str],
+    sheet_ans1: str,
+    sheet_ans2: str,
+    sheet_ans3: str,
+    sheet_ans4: str,
+    sheet_ans5: str,
+    sheet_ans6: str,
+    sheet_ans7: str,
+    sheet_ans8: str,
+    sheet_ans9: str,
+    sheet_ans10: str,
     max_marks: float,
     lower_limit: float,
     upper_limit: float,
-    sheet_ans1: List[str],
-    sheet_ans2: List[str],
-    sheet_ans3: List[str],
-    sheet_ans4: List[str],
-    sheet_ans5: List[str],
-    sheet_ans6: List[str],
-    sheet_ans7: List[str],
-    sheet_ans8: List[str],
-    sheet_ans9: List[str],
-    sheet_ans10: List[str],
 ):
     ans_list = [
         ans1,
@@ -171,20 +173,20 @@ async def index(
         ans10,
     ]
     sentences = [
-        sheet_ans1,
-        sheet_ans2,
-        sheet_ans3,
-        sheet_ans4,
-        sheet_ans5,
-        sheet_ans6,
-        sheet_ans7,
-        sheet_ans8,
-        sheet_ans9,
-        sheet_ans10,
+        [sheet_ans1],
+        [sheet_ans2],
+        [sheet_ans3],
+        [sheet_ans4],
+        [sheet_ans5],
+        [sheet_ans6],
+        [sheet_ans7],
+        [sheet_ans8],
+        [sheet_ans9],
+        [sheet_ans10],
     ]
     for idx in range(len(sentences)):
         sentences[idx] = " ".join(sentences[idx])
-        
+
     if lower_limit > 1.0 or lower_limit < 0.0 or upper_limit > 1.0 or upper_limit < 0.0:
         raise HTTPException(status_code=400, detail="bias1 or bias2 not in range (0-1)")
     if lower_limit > upper_limit:
