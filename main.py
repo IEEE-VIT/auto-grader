@@ -15,7 +15,7 @@ app = FastAPI(
 )
 
 
-def auto_grade(defined_answers, img, max_marks, bias):
+def get_sentences_from_sheet(img):
     answers, coordinates = box_extraction(img)
     if len(answers) == 380:
 
@@ -25,8 +25,7 @@ def auto_grade(defined_answers, img, max_marks, bias):
             answers.shape
         )  # 16 cells x 2 rows x 10 answers = 360 boxes x (28 x 28) pixels
 
-        marks = []
-
+        sentences = []
         for n in range(10):  # all questions
             sentence = ""
             answer = answers[38 * n : 38 * (n + 1)]  # individual answer(2 rows)
@@ -52,25 +51,32 @@ def auto_grade(defined_answers, img, max_marks, bias):
                     prev = i + 1
 
             print(n + 1, sentence[::-1])
+            sentences.append(sentence)
+        return sentences
 
-            new_words = []
-            for answer in defined_answers[n]:
-                words = answer.split()
-                for word in words:
-                    new_words.append(word.lower())
+def find_marks(sentences, defined_answers, max_marks, bias):
+    n = 0
+    marks = []
+    for sentence in sentences:
+        new_words = []
+        for answer in defined_answers[n]:
+            words = answer.split()
+            for word in words:
+                new_words.append(word.lower())
 
-            query = fix_spellings(sentence[::-1].lower(), new_words)
+        query = fix_spellings(sentence[::-1].lower(), new_words)
 
-            if query != "":
-                print(query)
-                cos_scores = check_similarity(defined_answers[n], query)
-                m = get_marks(cos_scores, max_marks, bias)
-                print("Marks: ", "%.2f" % m)
-                marks.append(round(m, 4))
-            else:
-                print("Marks: ", "0.00")
-                marks.append(0.0)
-        return marks
+        if query != "":
+            print(query)
+            cos_scores = check_similarity(defined_answers[n], query)
+            m = get_marks(cos_scores, max_marks, bias)
+            print("Marks: ", "%.2f" % m)
+            marks.append(round(m, 4))
+        else:
+            print("Marks: ", "0.00")
+            marks.append(0.0)
+        n+=1
+    return marks
 
 
 @app.get("/")
@@ -122,5 +128,68 @@ async def index(
         ans9,
         ans10,
     ]
-    marks = auto_grade(ans_list, img, max_marks, (lower_limit, upper_limit))
+    sentences = get_sentences_from_sheet(img)
+    marks = find_marks(sentences, ans_list, max_marks, (lower_limit, upper_limit))
+    return {"marks": marks}
+
+@app.post('/grade_on_answers/')
+async def index(
+    ans1: List[str],
+    ans2: List[str],
+    ans3: List[str],
+    ans4: List[str],
+    ans5: List[str],
+    ans6: List[str],
+    ans7: List[str],
+    ans8: List[str],
+    ans9: List[str],
+    ans10: List[str],
+    max_marks: float,
+    lower_limit: float,
+    upper_limit: float,
+    sheet_ans1: List[str],
+    sheet_ans2: List[str],
+    sheet_ans3: List[str],
+    sheet_ans4: List[str],
+    sheet_ans5: List[str],
+    sheet_ans6: List[str],
+    sheet_ans7: List[str],
+    sheet_ans8: List[str],
+    sheet_ans9: List[str],
+    sheet_ans10: List[str],
+):
+    ans_list = [
+        ans1,
+        ans2,
+        ans3,
+        ans4,
+        ans5,
+        ans6,
+        ans7,
+        ans8,
+        ans9,
+        ans10,
+    ]
+    sentences = [
+        sheet_ans1,
+        sheet_ans2,
+        sheet_ans3,
+        sheet_ans4,
+        sheet_ans5,
+        sheet_ans6,
+        sheet_ans7,
+        sheet_ans8,
+        sheet_ans9,
+        sheet_ans10,
+    ]
+    for idx in range(len(sentences)):
+        sentences[idx] = " ".join(sentences[idx])
+        
+    if lower_limit > 1.0 or lower_limit < 0.0 or upper_limit > 1.0 or upper_limit < 0.0:
+        raise HTTPException(status_code=400, detail="bias1 or bias2 not in range (0-1)")
+    if lower_limit > upper_limit:
+        raise HTTPException(
+            status_code=400, detail="lower_limit cannot be greater than upper_limit"
+        )
+    marks = find_marks(sentences, ans_list, max_marks, (lower_limit, upper_limit))
     return {"marks": marks}
