@@ -4,9 +4,11 @@
 <p align="center">Consider leaving a :star: if you found the project helpful.</p>
 
 # Auto Grader
-Auto Grader helps teachers by automating the paper correction process.
+
+Auto Grader helps teachers by automating the paper correction process using advanced computer vision and NLP.
 
 ## Flow
+
 Step 1: Teacher uploads the scanned answersheet and the correct answers for the question.
 
 <img src="https://raw.githubusercontent.com/IEEE-VIT/auto-grader/main/samples/form_scanned_2.jpg" alt="Auto-Grader Teacher Input" width="500"/>
@@ -29,23 +31,23 @@ Step 6: Then sentences are formed which are then sent along with the correct ans
 
 Step 7: The similarity model gives a cosine score using which is used to determine the marks a student should get for their answer.
 
-
 ## Built With
 
-* [Python 3.8.10](https://www.python.org/downloads/release/python-3810/)
-* [FastAPI](https://fastapi.tiangolo.com/)
-* [TensorFlow 2](https://www.tensorflow.org/)
-* [OpenCV](https://docs.opencv.org/master/index.html)
+- [Python 3.8.10](https://www.python.org/downloads/release/python-3810/)
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [TensorFlow 2](https://www.tensorflow.org/)
+- [OpenCV](https://docs.opencv.org/master/index.html)
 
 ## Getting Started
 
 To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
+
 - Python 3.8.10 and the latest version of pip.
 
-
 ### Installation
+
 1. Fork it.
 
 2. Clone the repo
@@ -73,7 +75,9 @@ To get a local copy up and running follow these simple steps.
    ```
 
 ## Contributing
-To start contributing, check out [CONTRIBUTING.md](https://github.com/IEEE-VIT/auto-grader/blob/master/CONTRIBUTING.md). New contributors are always welcome to support this project. If you want something gentle to start with, check out issues labelled as `easy` or `good-first-issue`. Check out issues labelled as `hacktoberfest` if you are up for some grabs! :) 
+
+To start contributing, check out [CONTRIBUTING.md](https://github.com/IEEE-VIT/auto-grader/blob/master/CONTRIBUTING.md). New contributors are always welcome to support this project. If you want something gentle to start with, check out issues labelled as `easy` or `good-first-issue`. Check out issues labelled as `hacktoberfest` if you are up for some grabs! :)
 
 ## License
+
 This project is licensed under [MIT](https://github.com/IEEE-VIT/auto-grader/blob/master/LICENSE.md).
